@@ -1,0 +1,376 @@
+# RBI and Indian Market Priors for Synthetic Data Generation
+# Extract these values from RBI publications and Indian economic data
+# Update this file with actual values you extract
+
+# Default Rates (from RBI Monetary Policy Report Oct 2025, Chapter IV)
+# NPA ratios as of June 2025
+default_rates:
+  overall_retail: 0.020  # 2.0% NPA ratio for retail loans (June 2025)
+  personal_loans: 0.020  # 2.0% NPA ratio (aligned with retail loans)
+  credit_cards: 0.020     # 2.0% NPA ratio (aligned with retail loans, unsecured segment may be higher)
+  home_loans: 0.010       # ~1% for secured home loans (estimated, housing is typically lower risk)
+  microfinance: 0.063     # 6.3% NPA ratio for agriculture (includes microfinance)
+  agriculture: 0.063      # 6.3% NPA ratio (June 2025)
+  industry: 0.022        # 2.2% NPA ratio (June 2025)
+  services: 0.012         # 1.2% NPA ratio (June 2025)
+  overall_gross_npa: 0.023  # 2.3% overall gross NPA ratio for SCBs (June 2025)
+  stressed_assets_ratio: 0.028  # 2.8% stressed assets ratio (June 2025)
+
+# Interest Rate Ranges (from RBI Monetary Policy Report Oct 2025, Chapter IV)
+# Based on repo rate (6.25% as of Sep 2025) + spreads from Table IV.12 (Aug 2025)
+# Policy rates: SDF 6.25%, Repo 6.50%, MSF 6.75%
+interest_rates:
+  repo_rate: 0.0625  # 6.25% policy repo rate (Sep 2025)
+  policy_corridor:
+    sdf_rate: 0.0625  # 6.25% Standing Deposit Facility (floor)
+    repo_rate: 0.0650  # 6.50% Repo rate (middle)
+    msf_rate: 0.0675  # 6.75% Marginal Standing Facility (ceiling)
+  personal_loans:
+    # Other personal loans spread: 3.58% (domestic banks avg, Aug 2025)
+    # Range estimated: PSBs 3.30% to PVBs 5.31% spread over repo
+    min: 0.0955   # 9.55% APR (repo 6.25% + min spread 3.30%)
+    max: 0.1156   # 11.56% APR (repo 6.25% + max spread 5.31%)
+    mean: 0.0983  # 9.83% APR (repo 6.25% + avg spread 3.58%)
+  credit_cards:
+    # Credit cards typically higher than other personal loans (unsecured)
+    # Estimated spread: 8-12% over repo (conservative estimate)
+    min: 0.1425   # 14.25% APR (repo 6.25% + 8% spread)
+    max: 0.1825   # 18.25% APR (repo 6.25% + 12% spread)
+    mean: 0.1625  # 16.25% APR (repo 6.25% + 10% spread)
+  home_loans:
+    # Housing loans spread: 2.37% (domestic banks avg, Aug 2025)
+    # Range: PSBs 2.11% to PVBs 2.51% spread over repo
+    min: 0.0836   # 8.36% APR (repo 6.25% + min spread 2.11%)
+    max: 0.0876   # 8.76% APR (repo 6.25% + max spread 2.51%)
+    mean: 0.0862  # 8.62% APR (repo 6.25% + avg spread 2.37%)
+  vehicle_loans:
+    # Vehicle loans spread: 3.01% (domestic banks avg, Aug 2025)
+    # Range: PSBs 2.69% to PVBs 4.26% spread over repo
+    min: 0.0894   # 8.94% APR (repo 6.25% + min spread 2.69%)
+    max: 0.1051   # 10.51% APR (repo 6.25% + max spread 4.26%)
+    mean: 0.0926  # 9.26% APR (repo 6.25% + avg spread 3.01%)
+  education_loans:
+    # Education loans spread: 4.55% (domestic banks avg, Aug 2025)
+    # Range: PSBs 3.42% to PVBs 5.55% spread over repo
+    min: 0.0967   # 9.67% APR (repo 6.25% + min spread 3.42%)
+    max: 0.1180   # 11.80% APR (repo 6.25% + max spread 5.55%)
+    mean: 0.1080  # 10.80% APR (repo 6.25% + avg spread 4.55%)
+  msme_loans:
+    # MSME loans spread: 3.36% (domestic banks avg, Aug 2025)
+    # Range: PSBs 3.48% to PVBs 3.33% spread over repo
+    min: 0.0958   # 9.58% APR (repo 6.25% + min spread 3.33%)
+    max: 0.0973   # 9.73% APR (repo 6.25% + max spread 3.48%)
+    mean: 0.0961  # 9.61% APR (repo 6.25% + avg spread 3.36%)
+  deposit_rates:
+    savings_deposit:
+      min: 0.025   # 2.5% minimum savings deposit rate (Aug 2025)
+      max: 0.055   # 5.5% maximum savings deposit rate (Aug 2025)
+      mean: 0.040  # 4.0% small savings rate (Q3:2025-26)
+    term_deposits:
+      one_year: 0.069   # 6.9% (Q3:2025-26)
+      two_year: 0.070   # 7.0% (Q3:2025-26)
+      three_year: 0.071  # 7.1% (Q3:2025-26)
+      five_year: 0.075   # 7.5% (Q3:2025-26)
+    # Transmission data (Feb-Aug 2025): Fresh deposits -106 bps, Outstanding -22 bps
+
+# Income Distributions (from Census 2011, PLFS, MOSPI)
+income_stats:
+  # Monthly household income in INR
+  urban:
+    mean: 50000
+    std: 30000
+    min: 15000
+    max: 500000
+  rural:
+    mean: 25000
+    std: 15000
+    min: 8000
+    max: 150000
+  # Income by occupation
+  salaried_mean: 60000
+  self_employed_mean: 35000
+  business_mean: 45000
+
+# Loan Characteristics
+loan_stats:
+  # Loan amount to income ratio
+  loan_to_income_ratio:
+    min: 0.5   # 6 months income
+    max: 24.0  # 2 years income
+    mean: 10.0 # 10 months income
+  
+  # Loan tenure (months)
+  tenure:
+    personal_loans: [12, 24, 36, 48, 60]
+    home_loans: [120, 180, 240, 300, 360]
+    default_distribution: [0.2, 0.3, 0.25, 0.15, 0.1]  # Probability for each tenure
+
+# Demographics (from Census 2011)
+demographics:
+  age:
+    mean: 35
+    std: 12
+    min: 18
+    max: 70
+  
+  # Urban vs Rural split
+  urban_rural_split:
+    urban: 0.35  # 35% urban
+    rural: 0.65  # 65% rural
+  
+  # Education levels (proportions)
+  education:
+    high_school: 0.25
+    graduate: 0.45
+    post_graduate: 0.20
+    professional: 0.10
+  
+  # Occupation categories (proportions)
+  occupation:
+    salaried: 0.40
+    self_employed: 0.30
+    business: 0.15
+    agriculture: 0.10
+    others: 0.05
+
+# Credit Score Distribution (estimated, as India doesn't have unified CIBIL range)
+credit_score:
+  mean: 650
+  std: 100
+  min: 300
+  max: 900
+  # Score distribution by default risk
+  low_risk_range: [700, 900]    # Low default probability
+  medium_risk_range: [550, 700] # Medium default probability
+  high_risk_range: [300, 550]   # High default probability
+
+# Banking Access (from RBI Monetary Policy Report Oct 2025, Chapter IV)
+banking_access:
+  bank_account_coverage: 0.80  # 80% of adults have bank accounts (estimate)
+  credit_card_penetration: 0.016  # 1.6% share in total non-food credit (Aug 2025)
+  average_accounts_per_person: 1.2
+  digital_adoption: 0.60  # 60% use digital banking (estimate)
+  # Credit distribution by bank group (Sep 2025):
+  credit_share:
+    public_sector_banks: 0.597  # 59.7% of incremental credit
+    private_banks: 0.380  # 38.0% of incremental credit
+    foreign_banks: 0.023  # 2.3% of incremental credit
+  # Credit growth rates (y-o-y, Sep 2025):
+  credit_growth:
+    overall_scbs: 0.102  # 10.2% non-food credit growth
+    public_sector_banks: 0.114  # 11.4% PSBs credit growth
+    private_banks: 0.094  # 9.4% PVBs credit growth
+    foreign_banks: 0.069  # 6.9% foreign banks credit growth
+
+# Geographic Distribution (major states)
+state_distribution:
+  maharashtra: 0.15
+  uttar_pradesh: 0.17
+  tamil_nadu: 0.07
+  karnataka: 0.06
+  gujarat: 0.06
+  rajasthan: 0.06
+  bengal: 0.08
+  andhra_pradesh: 0.04
+  telangana: 0.03
+  madhya_pradesh: 0.06
+  others: 0.22
+
+# Loss Given Default (LGD) - typical range
+lgd:
+  unsecured_loans: 0.60  # 60% loss on default
+  secured_loans: 0.30     # 30% loss (due to collateral)
+  credit_cards: 0.70      # 70% loss (unsecured, small amounts)
+
+# RBI Compliance Flags (from RBI regulations)
+# These flags ensure synthetic data complies with RBI regulations
+rbi_compliance_flags:
+  # NSFR RSF Factor - Dec 29, 2023: Net Stable Funding Ratio for Non-Deposit Taking NBFCs
+  nsfr_rsf_factor:
+    values: [65, 100]  # 65% or 100% as per regulation
+    description: "RBI NSFR RSF factor for non-deposit taking NBFCs"
+  
+  # Inoperative Account Flag - Jan 01, 2024: Inoperative accounts regulation
+  inoperative_flag:
+    values: [0, 1]  # 0 = active, 1 = inoperative
+    default_rate: 0.03  # 3% of accounts marked as inoperative
+    description: "RBI inoperative account flag"
+  
+  # FX Hedging Flag - Jan 05, 2024: Foreign Exchange risk hedging
+  fx_hedging_flag:
+    values: [0, 1]  # 0 = no hedging, 1 = hedged
+    description: "RBI FX risk hedging flag"
+  
+  # Commercial Paper / Non-Convertible Debentures Flag - Jan 03, 2024
+  cp_ncd_flag:
+    values: [0, 1]  # 0 = not CP/NCD, 1 = CP/NCD
+    description: "RBI CP/NCD consistency flag"
+
+# Census Data - Indian States (from Census 2011)
+census_states:
+  - "A & N Islands"
+  - "Andhra Pradesh"
+  - "Arunachal Pradesh"
+  - "Assam"
+  - "Bihar"
+  - "Chandigarh"
+  - "Chhattisgarh"
+  - "Delhi"
+  - "Goa"
+  - "Gujarat"
+  - "Haryana"
+  - "Himachal Pradesh"
+  - "Jammu and Kashmir"
+  - "Jharkhand"
+  - "Karnataka"
+  - "Kerala"
+  - "Madhya Pradesh"
+  - "Maharashtra"
+  - "Manipur"
+  - "Meghalaya"
+  - "Mizoram"
+  - "Nagaland"
+  - "Odisha"
+  - "Puducherry"
+  - "Punjab"
+  - "Rajasthan"
+  - "Sikkim"
+  - "Tamil Nadu"
+  - "Telangana"
+  - "Tripura"
+  - "Uttar Pradesh"
+  - "Uttarakhand"
+  - "West Bengal"
+
+# Worker Categories (from Census DDWCT)
+worker_types:
+  - "Main workers"
+  - "Marginal workers"
+  - "Non-workers"
+
+# Age Groups (from Census DDWCT)
+age_groups:
+  - "5-9"
+  - "10-14"
+  - "15-19"
+  - "20-24"
+  - "25-29"
+  - "30-34"
+  - "35-39"
+  - "40-49"
+  - "50-59"
+  - "60-69"
+  - "70-79"
+  - "80+"
+
+# GSDP Manufacturing Data (2011-12 base, in Lakh INR)
+# From Census XLSX - approximate values for states
+gsdp_manufacturing:
+  "A & N Islands": 5051
+  "Andhra Pradesh": 3969153
+  "Arunachal Pradesh": 9934
+  "Assam": 1274688
+  "Bihar": 1268069
+  "Chandigarh": 91508
+  "Chhattisgarh": 2096873
+  "Delhi": 1591118
+  "Goa": 1508357
+  "Gujarat": 11184923
+  "Haryana": 4454729
+  "Himachal Pradesh": 1393182
+  "Jammu and Kashmir": 624271
+  "Jharkhand": 2740497
+  "Karnataka": 8343501
+  "Kerala": 3000616
+  "Madhya Pradesh": 2967896
+  "Maharashtra": 20680408
+  "Manipur": 32858
+  "Meghalaya": 426022
+  "Mizoram": 4967
+  "Nagaland": 11152
+  "Odisha": 3273608
+  "Puducherry": 368161
+  "Punjab": 2940858
+  "Rajasthan": 5689422
+  "Sikkim": 413379
+  "Tamil Nadu": 12163483
+  "Telangana": 5292515
+  "Tripura": 62462
+  "Uttar Pradesh": 6919442
+  "Uttarakhand": 3741191
+  "West Bengal": 0  # Not available
+
+# Credit Growth by Sector (from RBI Monetary Policy Report Oct 2025, Chapter IV)
+# Based on Table IV.7 - Credit Growth (y-o-y, per cent) as of Aug 2025
+credit_growth_by_sector:
+  agriculture: 0.132  # 13.2% share in total non-food credit
+  industry:
+    total: 0.226  # 22.6% share in total non-food credit
+    msme: 0.072  # 7.2% share (Micro, Small, Medium Enterprises)
+    large: 0.155  # 15.5% share
+    infrastructure: 0.075  # 7.5% share
+  services:
+    total: 0.291  # 29.1% share in total non-food credit
+    excluding_nbfcs: 0.202  # 20.2% share
+    nbfcs: 0.089  # 8.9% share
+  personal_loans:
+    total: 0.351  # 35.1% share in total non-food credit
+    housing: 0.176  # 17.6% share (including Priority Sector Housing)
+    vehicle: 0.037  # 3.7% share
+    education: 0.008  # 0.8% share
+    credit_cards: 0.016  # 1.6% share
+    other_personal_loans: 0.087  # 8.7% share
+    unchanged_risk_weight: 0.238  # 23.8% share (secured)
+    increased_risk_weight: 0.113  # 11.3% share (unsecured)
+
+# Loan Benchmark Distribution (from RBI Monetary Policy Report Oct 2025, Chapter IV)
+# Share of outstanding floating rate loans (June 2025)
+loan_benchmarks:
+  mclr: 0.338  # 33.8% linked to MCLR (down from 38.2% in June 2024)
+  eblr: 0.629  # 62.9% linked to External Benchmark Lending Rate (up from 57.9% in June 2024)
+  others: 0.033  # 3.3% others
+  # Bank group differences:
+  public_sector_banks:
+    mclr_dominant: true  # MCLR is dominant for most sectors (50%+)
+    eblr_dominant_for_unsecured: true  # EBLR dominant for unsecured personal loans (~60-70%)
+  private_banks:
+    eblr_dominant: true  # EBLR is dominant across all sectors (70-80%)
+
+# Interest Rate Transmission (from RBI Monetary Policy Report Oct 2025, Chapter IV)
+# Easing phase: Feb-Aug 2025, Repo rate cut: -100 bps
+rate_transmission:
+  repo_rate_change: -0.0100  # -100 bps
+  lending_rates:
+    fresh_loans: -0.0058  # -58 bps transmission
+    outstanding_loans: -0.0055  # -55 bps transmission
+    eblr: -0.0100  # -100 bps (full transmission for EBLR-linked loans)
+    mclr_median: -0.0040  # -40 bps (1-year median MCLR)
+  deposit_rates:
+    fresh_retail: -0.0106  # -106 bps transmission
+    outstanding: -0.0022  # -22 bps transmission
+  sector_wise_fresh_loans:  # Transmission in bps (Feb-Aug 2025)
+    agriculture: -0.0070  # -70 bps
+    large_industry: -0.0082  # -82 bps
+    msme: -0.0087  # -87 bps
+    infrastructure: -0.0077  # -77 bps
+    education: -0.0089  # -89 bps
+    vehicle: -0.0036  # -36 bps
+    housing: -0.0049  # -49 bps
+    other_personal_loans: -0.0058  # -58 bps
+
+# Notes:
+# - Updated with data from RBI Monetary Policy Report October 2025, Chapter IV
+# - NPA ratios as of June 2025
+# - Interest rates and spreads as of August/September 2025
+# - Credit growth data as of August/September 2025
+# - Sources:
+#   - RBI Monetary Policy Report October 2025, Chapter IV: Liquidity Conditions and Financial Markets
+#   - Tables IV.7, IV.9, IV.10, IV.11, IV.12, IV.13
+#   - Charts IV.25, IV.36, IV.37, IV.38
+#   - RBI Financial Stability Reports (for historical context)
+#   - RBI Trends and Progress in Banking
+#   - Census 2011, PLFS
+#   - NPCI UPI statistics
+#   - RBI Regulations: NSFR (Dec 29, 2023), Inoperative Accounts (Jan 01, 2024)
+#   - RBI Regulations: FX Hedging (Jan 05, 2024), CP/NCD (Jan 03, 2024)
+

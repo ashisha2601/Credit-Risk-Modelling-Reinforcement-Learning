@@ -1,0 +1,36 @@
+# Large data files (exclude from git)
+home-credit-default-risk/*.csv
+home-credit-default-risk/*.parquet
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Model files (large)
+models/*.pkl
+models/*.h5
+models/*.joblib
+
+# Results (can be large)
+results/*.csv
+results/*.json
+results/*.parquet
