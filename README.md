@@ -109,6 +109,34 @@ pip install -r requirements.txt
 - [ ] Privacy compliance memo
 - [ ] Three notebooks (one per stage)
 
+## Synthetic outputs and results (not in git)
+
+To keep the repository light and avoid committing large files, all **synthetic datasets** and **visualisation outputs** are ignored via `.gitignore`:
+
+- `data/*.parquet`, `data/*.csv` – generated synthetic credit datasets (RBI priors-only, Kaggle-only, Hybrid, etc.)
+- `results/*.png`, `results/*.csv`, `results/*.parquet`, `results/*.pptx` – clustering plots, evaluation reports, and the auto-generated `cluster_analysis.pptx`.
+
+You can regenerate these locally by running:
+
+```bash
+# Hybrid CTGAN synthetic data (~200k rows)
+python run_hybrid_ctgan_pipeline.py
+
+# RBI priors-only and Kaggle-only synthetic datasets
+python run_priors_only_rbi_synthetic.py
+python run_kaggle_only_ctgan_300k.py
+
+# Risk-based clustering on all synthetic datasets
+python run_credit_risk_clustering_all.py
+
+# Visualisations (cluster profiles, heatmaps, PCA, etc.)
+python run_visualize_risk_clusters_all.py
+python run_advanced_cluster_visualizations.py
+
+# Optional: build PowerPoint summary under results/cluster_analysis.pptx
+python build_cluster_analysis_ppt.py
+```
+
 ## Contact
 
 For questions about data sources or project structure, refer to `DATASET_DOWNLOAD_GUIDE.md`.

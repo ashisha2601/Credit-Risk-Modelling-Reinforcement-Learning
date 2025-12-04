@@ -251,6 +251,9 @@ class ComprehensiveDatasetValidator:
         self.validation_results['loan_to_income'] = results
         return results
     
+
+
+    
     def check_emi_affordability(self):
         """EMI should be reasonable (typically 40-50% of income)"""
         results = {}

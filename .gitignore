@@ -34,3 +34,9 @@ models/*.joblib
 results/*.csv
 results/*.json
 results/*.parquet
+results/*.png
+results/*.pptx
+
+# Synthetic data outputs
+data/*.parquet
+data/*.csv
