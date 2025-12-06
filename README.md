@@ -35,7 +35,7 @@ See `HYBRID_APPROACH_GUIDE.md` for detailed steps.
 
 ### ✅ Easy Downloads (Do This First)
 
-**Option 1: Kaggle Datasets** (Recommended)
+**Option 1: Home_credit_default_risk** (Recommended)
 ```bash
 # Install Kaggle CLI
 pip install kaggle
