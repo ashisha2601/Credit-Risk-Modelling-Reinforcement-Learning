@@ -11,13 +11,13 @@ This project develops a three-stage pipeline for credit risk assessment in India
 
 ## Quick Start - Hybrid Approach (Recommended)
 
-The hybrid approach combines Kaggle dataset structure with RBI/Indian market priors:
+The hybrid approach combines Home-Credit-Risk dataset structure with RBI/Indian market priors:
 
 ```bash
 # 1. Install dependencies
 pip install -r requirements.txt
 
-# 2. Download Kaggle dataset (optional but recommended)
+# 2. Download Home-Credit-Risk dataset (optional but recommended)
 python src/download_kaggle.py
 
 # 3. Update RBI priors (edit config/priors_template.yaml)
@@ -113,7 +113,7 @@ pip install -r requirements.txt
 
 To keep the repository light and avoid committing large files, all **synthetic datasets** and **visualisation outputs** are ignored via `.gitignore`:
 
-- `data/*.parquet`, `data/*.csv` – generated synthetic credit datasets (RBI priors-only, Kaggle-only, Hybrid, etc.)
+- `data/*.parquet`, `data/*.csv` – generated synthetic credit datasets (RBI priors-only, Home-Credit-Risk-only, Hybrid, etc.)
 - `results/*.png`, `results/*.csv`, `results/*.parquet`, `results/*.pptx` – clustering plots, evaluation reports, and the auto-generated `cluster_analysis.pptx`.
 
 You can regenerate these locally by running:
@@ -122,7 +122,7 @@ You can regenerate these locally by running:
 # Hybrid CTGAN synthetic data (~200k rows)
 python run_hybrid_ctgan_pipeline.py
 
-# RBI priors-only and Kaggle-only synthetic datasets
+# RBI priors-only and Home-Credit-Risk-only synthetic datasets
 python run_priors_only_rbi_synthetic.py
 python run_kaggle_only_ctgan_300k.py
 
