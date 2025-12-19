@@ -83,6 +83,7 @@ synthetic_data = generator.generate_synthetic(
 # - STATE (from Census)
 # - WORKER_TYPE (from Census)
 # - CURRENCY (INR)
+
 ```
 
 ### Generated Columns
@@ -105,9 +106,9 @@ The synthetic data will include:
 - WORKER_TYPE (Main/Marginal/Non-workers)
 - CURRENCY (INR)
 
-## Regulatory Compliance
+# Regulatory Compliance
 
-### RBI Regulations Implemented:
+# RBI Regulations Implemented:
 
 1. **NSFR Regulation (Dec 29, 2023)**
    - Ensures synthetic data includes NSFR RSF factors

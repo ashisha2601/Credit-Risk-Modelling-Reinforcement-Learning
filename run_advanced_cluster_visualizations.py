@@ -175,6 +175,111 @@ def plot_heatmap_cluster_vs_category(
     print(f"Saved heatmap (Cluster vs {label}) for {dataset} to: {out_path}")
 
 
+def plot_cluster_category_bar(
+    df: pd.DataFrame,
+    dataset: str,
+    category_col: str,
+    label: str,
+    filename_suffix: str,
+) -> None:
+    """
+    Generic paired bar chart:
+    default rate by (CLUSTER_ID, category_col) with value labels on top.
+    """
+    if category_col not in df.columns:
+        print(f"{category_col} not found for {dataset}; skipping bar plot.")
+        return
+
+    default_col = detect_default_col(df)
+    stats = (
+        df.groupby(["CLUSTER_ID", category_col])[default_col]
+        .mean()
+        .reset_index()
+        .rename(columns={default_col: "default_rate"})
+    )
+
+    plt.figure(figsize=(8, 5))
+    ax = sns.barplot(
+        data=stats,
+        x="CLUSTER_ID",
+        y="default_rate",
+        hue=category_col,
+    )
+    plt.xlabel("Cluster ID")
+    plt.ylabel("Default rate")
+    plt.title(f"Default Rate by Cluster and {label} ({dataset})")
+    ax.yaxis.set_major_formatter(
+        plt.FuncFormatter(lambda x, pos: f"{x*100:.1f}%")
+    )
+    # Add percentage labels on top of each bar
+    for p in ax.patches:
+        height = p.get_height()
+        ax.text(
+            p.get_x() + p.get_width() / 2,
+            height,
+            f"{height*100:.1f}%",
+            ha="center",
+            va="bottom",
+            fontsize=7,
+        )
+    plt.tight_layout()
+
+    out_path = RESULTS_DIR / f"{dataset}_bar_cluster_vs_{filename_suffix}.png"
+    plt.savefig(out_path, dpi=150)
+    plt.close()
+    print(f"Saved paired bar plot (Cluster vs {label}) to: {out_path}")
+
+
+def plot_kaggle_contract_type_cluster_bar(df: pd.DataFrame) -> None:
+    """
+    For Kaggle-only dataset:
+    Paired bar chart of default rate by (CLUSTER_ID, NAME_CONTRACT_TYPE),
+    with percentage labels on top of each bar.
+    """
+    if "NAME_CONTRACT_TYPE" not in df.columns:
+        print("NAME_CONTRACT_TYPE not found for kaggle_only; skipping paired bar plot.")
+        return
+
+    default_col = detect_default_col(df)
+    stats = (
+        df.groupby(["CLUSTER_ID", "NAME_CONTRACT_TYPE"])[default_col]
+        .mean()
+        .reset_index()
+        .rename(columns={default_col: "default_rate"})
+    )
+
+    plt.figure(figsize=(8, 5))
+    ax = sns.barplot(
+        data=stats,
+        x="CLUSTER_ID",
+        y="default_rate",
+        hue="NAME_CONTRACT_TYPE",
+    )
+    plt.xlabel("Cluster ID")
+    plt.ylabel("Default rate")
+    plt.title("Default Rate by Cluster and Contract Type (kaggle_only)")
+    ax.yaxis.set_major_formatter(
+        plt.FuncFormatter(lambda x, pos: f"{x*100:.1f}%")
+    )
+    # Add percentage labels on top of each bar
+    for p in ax.patches:
+        height = p.get_height()
+        ax.text(
+            p.get_x() + p.get_width() / 2,
+            height,
+            f"{height*100:.1f}%",
+            ha="center",
+            va="bottom",
+            fontsize=7,
+        )
+    plt.tight_layout()
+
+    out_path = RESULTS_DIR / "kaggle_only_bar_cluster_vs_contract_type.png"
+    plt.savefig(out_path, dpi=150)
+    plt.close()
+    print(f"Saved paired bar plot (Cluster vs Contract Type) to: {out_path}")
+
+
 def collect_pd_by_risk_segment(df: pd.DataFrame, dataset: str) -> pd.DataFrame:
     default_col = detect_default_col(df)
     if "RISK_SEGMENT" not in df.columns:
@@ -271,6 +376,8 @@ def main() -> None:
                     "NAME_CONTRACT_TYPE",
                     "Contract Type",
                 )
+                # Also create paired bar chart for cluster vs contract type
+                plot_kaggle_contract_type_cluster_bar(df)
         else:
             if "LOAN_TYPE" in df.columns:
                 plot_heatmap_cluster_vs_category(
@@ -279,12 +386,26 @@ def main() -> None:
                     "LOAN_TYPE",
                     "Loan Type",
                 )
+                plot_cluster_category_bar(
+                    df,
+                    name,
+                    "LOAN_TYPE",
+                    "Loan Type",
+                    "loan_type",
+                )
             if "BANK_GROUP" in df.columns:
                 plot_heatmap_cluster_vs_category(
                     df,
                     name,
                     "BANK_GROUP",
                     "Bank Group",
+                )
+                plot_cluster_category_bar(
+                    df,
+                    name,
+                    "BANK_GROUP",
+                    "Bank Group",
+                    "bank_group",
                 )
 
         # Collect PD by risk segment for cross-dataset plot
